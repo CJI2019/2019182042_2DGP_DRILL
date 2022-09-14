@@ -30,5 +30,5 @@ while 1:
     turtle.forward(100)
     count = count + 1
 
-
+turtle.exitonclick()
 
