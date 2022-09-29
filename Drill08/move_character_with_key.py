@@ -52,9 +52,13 @@ def handle_events():
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 Not_Move(0)
+                if dirKeyDown[1] == 1:
+                    dirLeft ,dirRight= True, False
                 dirx -= 1
             elif event.key == SDLK_LEFT:
                 Not_Move(1)
+                if dirKeyDown[0] == 1:
+                    dirLeft ,dirRight= False, True
                 dirx += 1
             elif event.key == SDLK_UP:
                 Not_Move(2)
@@ -81,9 +85,9 @@ dirData, dirKeyDown = 0 , [0,0,0,0]
 while running:
     clear_canvas()
     TUK_ground.draw(TUK_WIDTH // 2, TUK_HEIGHT // 2)
-    if dirRight == True :
+    if dirRight == True and dirLeft == False:
         character.clip_draw(frame * 100, 100 * 1, 100, 100, x, y)
-    elif dirLeft == True:
+    elif dirLeft == True and dirRight == False:
         character.clip_draw(frame * 100, 100 * 0, 100, 100, x, y)
     elif dirLeft == False and dirRight == False and dirData == 1: # 기존 방향이 오른쪽 일때 Idle
         character.clip_draw(frame * 100, 100 * 2, 100, 100, x, y)
