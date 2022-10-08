@@ -20,14 +20,15 @@ MoveRight ,MoveLeft = False , False
 
 FALLING = False
 frame = 0
+# 플레이어 좌표
 x,y = 300 , 300
 xPos , yPos = 0,0
 
 # dir 0 이면 오른쪽 1 이면 왼쪽을 마지막에 봄.
 dir = 0
-
 play = True
 
+# 순서대로 방향키 좌, 우 누르면 1 때면 0
 Current_KeyDown_List = [0,0]
 
 def KeyDown_event():
@@ -93,14 +94,13 @@ def Player_Movement():
             Player_Left_Run.clip_draw(frame*(Player_Left_Run.w//10), 0, Player_Left_Run.w//10, Player_Left_Run.h,x,y)
             delay(0.01)
         elif(MoveRight == False and MoveLeft == False):
-            frame = ( frame + 1 ) % 7
+            frame += 1
             if(dir == 0):
-                Player_Right_Idle.clip_draw(frame*(Player_Right_Idle.w//7), 0,Player_Right_Idle.w//7,Player_Right_Idle.h,x,y)
+                Player_Right_Idle.clip_draw(((frame//5) % 7)*(Player_Right_Idle.w//7), 0,Player_Right_Idle.w//7,Player_Right_Idle.h,x,y)
             else :
-                Player_Left_Idle.clip_draw(frame*(Player_Left_Idle.w//7), 0,Player_Left_Idle.w//7,Player_Left_Idle.h,x,y)
-            delay(0.05)
+                Player_Left_Idle.clip_draw(((frame//5) % 7)*(Player_Left_Idle.w//7), 0,Player_Left_Idle.w//7,Player_Left_Idle.h,x,y)
+            delay(0.01)
     elif (JUMPKEYDOWN == True):
-        # frame = ( frame + 1 ) % 3
         if FALLING == False: # 점프로 올라가는 애니메이션
             y += yPos
             if dir == 0: 
