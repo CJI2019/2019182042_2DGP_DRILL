@@ -6,26 +6,32 @@ open_canvas(BackGround_WITDH,BackGround_HEIGHT)
 
 # Player 정보가 담겨있다
 import PlayerObject
+import FloorObject
 
 BackGround = load_image("back_2_2000.png")
-Main_Floor = load_image("Floor\main_floor_1.png")
+
 BackGroundHeight = 0
 
-# 플레이어 객체 생성
-Player = PlayerObject.PLAYER()
+floors = [FloorObject.FLOOR() for i in range(2)]
 
-PlayerObject.y =(BackGround_HEIGHT//20) + (Main_Floor.h//2) + (Player.Right_Idle.h//2) 
+
+# 플레이어 객체 생성
+Player = PlayerObject.PLAYER() 
+PlayerObject.y =(BackGround_HEIGHT//20) + (floors[0].image.h//2) + (Player.Right_Idle.h//2) 
 
 while PlayerObject.play:
     clear_canvas()
-    BackGround.clip_draw(0,0+(int)(BackGroundHeight),BackGround.w,BackGround.h-(int)(BackGroundHeight),BackGround_WITDH//2,BackGround_HEIGHT//2)
-    Main_Floor.draw(BackGround_WITDH//2,BackGround_HEIGHT//20)
+    BackGround.clip_draw(0,(int)(BackGroundHeight),BackGround.w,BackGround.h
+                ,BackGround_WITDH,BackGround_HEIGHT)
 
     # 0.1 씩 배경 이미지 내려가게함.
     BackGroundHeight += 0.1
 
-    Player.Player_Movement()
-    PlayerObject.KeyDown_event()
+    for floor in floors:
+        floor.Draw()
+
+    Player.Player_Movement(floors)
+    Player.KeyDown_event()
 
     update_canvas()
 

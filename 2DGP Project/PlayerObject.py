@@ -1,5 +1,7 @@
+from math import floor
+from webbrowser import BackgroundBrowser
 from pico2d import *
-
+BackGround_WITDH ,BackGround_HEIGHT  = 600 , 600
 # 점프 높이
 JUMPHEIGHT = 14
 
@@ -17,9 +19,8 @@ class PLAYER:
         self.Right_Jump = load_image('Player\Player_right_jump.png')
         self.Left_Fall = load_image('Player\Player_left_fall.png')
         self.Right_Fall = load_image('Player\Player_right_fall.png')
-            
-    def Player_Movement(self):
-
+        self.level = 0
+    def Player_Movement(self,floors):
         global MoveRight , MoveLeft ,x,y,xPos,yPos,frame,FALLING,dir,JUMPKEYDOWN
         global play
 
@@ -27,6 +28,10 @@ class PLAYER:
             if(MoveRight == True and MoveLeft == False):
                 frame = ( frame + 1 ) % 10
                 self.Right_Run.clip_draw(frame*(self.Right_Run.w//10), 0, self.Right_Run.w//10, self.Right_Run.h,x,y)
+                # for floor in floors:
+                #     if(floor.x1 > x + self.Right_Run.w//10 or floor.x2 < x - self.Right_Run.w//10 ) :
+                #             JUMPKEYDOWN , FALLING = True , True
+                #             yPos = JUMPHEIGHT
                 delay(0.01)
             elif(MoveRight == False and MoveLeft == True):
                 frame = ( frame + 1 ) % 10
@@ -41,7 +46,6 @@ class PLAYER:
                 delay(0.01)
         elif (JUMPKEYDOWN == True):
             if FALLING == False: # 점프로 올라가는 애니메이션
-                y += yPos
                 if dir == 0: 
                     if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
                         self.Right_Jump.clip_draw(0*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,x,y)
@@ -58,8 +62,6 @@ class PLAYER:
                         self.Left_Jump.clip_draw(2*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,x,y)
                 
             elif FALLING == True: # 점프 이후 떨어지는 애니메이션
-                if yPos <= JUMPHEIGHT : # 체공 시간 이후 떨어지게
-                    y -= yPos
                 if dir == 0: 
                     if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
                         self.Right_Fall.clip_draw(0*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)
@@ -74,19 +76,86 @@ class PLAYER:
                         self.Left_Fall.clip_draw(1*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
                     elif (yPos > (JUMPHEIGHT /3)*0):
                         self.Left_Fall.clip_draw(0*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
+            delay(0.01)
+ 
+        x += xPos * 4
+        if x + (self.Right_Run.w//10)//2 > BackGround_WITDH or x - (self.Right_Run.w//10)//2 < 0: 
+            x -= xPos * 4
 
+        if JUMPKEYDOWN :
+            if FALLING == False: # 점프로 올라가는 애니메이션
+                y += yPos
+                # 점프로 올라갈때 벽에 부딪히면 못올라가게.
+                for floor in floors:
+                    if floor.y2 < y + self.Right_Jump.h//2 and floor.y1 > y + self.Right_Jump.h//2 and floor.x1 < x and floor.x2 > x:
+                        y -= yPos
+            elif FALLING == True: # 점프 이후 떨어지는 애니메이션
+                if yPos <= JUMPHEIGHT : # 체공 시간 이후 떨어지게
+                    y -= yPos
+                    # 떨어질때 floor를 밟음.
+                    for floor in floors:
+                        if (floor.y2 < y - self.Right_Fall.h//2 and floor.y1 > y - self.Right_Fall.h//2 
+                        and floor.x1 < x and floor.x2 > x):
+                            y = floor.y1 + self.Right_Idle.h//2
+                            yPos = 1
+                            # Floor 레벨 동일 적용 플레이어가 위치한 발판의 인덱스
+                            self.level = floor.level
             yPos -= 1
-            if(yPos == 0 ):
+            if(yPos == 0): # 첫 번째 ypos가 0이 되는 경우는 점프까 끝난상태 두번째는 떨어지는 상태 전환 
                 if FALLING == True :
                     FALLING = False
                     JUMPKEYDOWN = False
+                    if(floors[self.level].x1 > x + (self.Right_Run.w//10)//2 or floors[self.level].x2 < x - (self.Right_Run.w//10)//2):
+                        JUMPKEYDOWN , FALLING = True , True
+                        yPos = JUMPHEIGHT
+                        y -= yPos 
+                        yPos -= 1
                 else :
                     FALLING = True
                     yPos = JUMPHEIGHT + 7 # + 7 은 공중에서 체공하는 시간정도를 나타냄.
-            delay(0.01)
+        else : # JUMPKEYDOWN 이 False 일때
+            if(floors[self.level].x1 > x + (self.Right_Run.w//10)//2 or floors[self.level].x2 < x - (self.Right_Run.w//10)//2):
+                JUMPKEYDOWN , FALLING = True , True
+                yPos = JUMPHEIGHT
+    
+    def KeyDown_event(self):
+        global play , xPos , yPos ,MoveLeft ,MoveRight ,dir,JUMPKEYDOWN, FALLING,Current_KeyDown_List
+        global x,y
+        events = get_events()
 
-            
-        x += xPos * 4
+        for event in events:
+            if(event.type == SDL_QUIT or event.key == SDLK_ESCAPE):
+                play = False
+            elif (event.type == SDL_KEYDOWN):
+                if(event.key == SDLK_RIGHT):
+                    MoveRight ,MoveLeft = True ,False
+                    dir = 0
+                    Current_KeyDown_List[0] = 1
+                    xPos += 1
+                if(event.key == SDLK_LEFT):
+                    MoveRight ,MoveLeft = False , True
+                    dir = 1
+                    Current_KeyDown_List[1] = 1
+                    xPos -= 1
+                if(event.key == SDLK_SPACE):
+                    if yPos != 0:
+                        continue
+                    yPos = JUMPHEIGHT
+                    JUMPKEYDOWN = True
+            elif (event.type == SDL_KEYUP):
+                if(event.key == SDLK_RIGHT):
+                    Current_KeyDown_Status()
+                    Current_KeyDown_List[0] = 0
+                    if Current_KeyDown_List[1] == 1 :
+                        MoveRight ,MoveLeft = False , True
+                    xPos -= 1
+                if(event.key == SDLK_LEFT):
+                    Current_KeyDown_Status()
+                    Current_KeyDown_List[1] = 0
+                    if Current_KeyDown_List[0] == 1 :
+                        MoveRight ,MoveLeft = True , False
+                    xPos += 1
+
 
 MoveRight ,MoveLeft = False , False
 
@@ -103,42 +172,6 @@ play = True
 # 순서대로 방향키 좌, 우 누르면 1 때면 0
 Current_KeyDown_List = [0,0]
 
-def KeyDown_event():
-    global play , xPos , yPos ,MoveLeft ,MoveRight ,dir,JUMPKEYDOWN ,Current_KeyDown_List
-    events = get_events()
-
-    for event in events:
-        if(event.type == SDL_QUIT or event.key == SDLK_ESCAPE):
-            play = False
-        elif (event.type == SDL_KEYDOWN):
-            if(event.key == SDLK_RIGHT):
-                MoveRight ,MoveLeft = True ,False
-                dir = 0
-                Current_KeyDown_List[0] = 1
-                xPos += 1
-            if(event.key == SDLK_LEFT):
-                MoveRight ,MoveLeft = False , True
-                dir = 1
-                Current_KeyDown_List[1] = 1
-                xPos -= 1
-            if(event.key == SDLK_SPACE):
-                if yPos != 0:
-                    continue
-                yPos = JUMPHEIGHT
-                JUMPKEYDOWN = True
-        elif (event.type == SDL_KEYUP):
-            if(event.key == SDLK_RIGHT):
-                Current_KeyDown_Status()
-                Current_KeyDown_List[0] = 0
-                if Current_KeyDown_List[1] == 1 :
-                    MoveRight ,MoveLeft = False , True
-                xPos -= 1
-            if(event.key == SDLK_LEFT):
-                Current_KeyDown_Status()
-                Current_KeyDown_List[1] = 0
-                if Current_KeyDown_List[0] == 1 :
-                    MoveRight ,MoveLeft = True , False
-                xPos += 1
 
 # 현재 다른 키와 같이 눌려있는지 상태 확인 하나만 눌려있으면 idle 상태로
 def Current_KeyDown_Status():
