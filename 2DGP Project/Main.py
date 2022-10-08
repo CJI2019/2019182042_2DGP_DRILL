@@ -12,12 +12,11 @@ BackGround = load_image("back_2_2000.png")
 
 BackGroundHeight = 0
 
-floors = [FloorObject.FLOOR() for i in range(2)]
-
+floors = [FloorObject.FLOOR() for i in range(FloorObject.SizeOfFloor())]
 
 # 플레이어 객체 생성
 Player = PlayerObject.PLAYER() 
-PlayerObject.y =(BackGround_HEIGHT//20) + (floors[0].image.h//2) + (Player.Right_Idle.h//2) 
+PlayerObject.y = (floors[0].y1) + (Player.Right_Idle.h//2) 
 
 while PlayerObject.play:
     clear_canvas()
@@ -26,13 +25,13 @@ while PlayerObject.play:
 
     # 0.1 씩 배경 이미지 내려가게함.
     BackGroundHeight += 0.1
+    FloorObject.FloorChange(Player,floors)
 
     for floor in floors:
         floor.Draw()
-
     Player.Player_Movement(floors)
     Player.KeyDown_event()
-
+    
     update_canvas()
 
 close_canvas()
