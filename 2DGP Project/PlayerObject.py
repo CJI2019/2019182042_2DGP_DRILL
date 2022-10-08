@@ -1,5 +1,3 @@
-from math import floor
-from webbrowser import BackgroundBrowser
 from pico2d import *
 BackGround_WITDH ,BackGround_HEIGHT  = 600 , 600
 # 점프 높이
@@ -19,7 +17,15 @@ class PLAYER:
         self.Right_Jump = load_image('Player\Player_right_jump.png')
         self.Left_Fall = load_image('Player\Player_left_fall.png')
         self.Right_Fall = load_image('Player\Player_right_fall.png')
+        # 현재 floor 판별
         self.level = 0
+        # floor 확정
+        self.CompliteLevel = 0
+    def CoordinateInput(self,ypos):
+        global x,y
+        y = ypos
+
+
     def Player_Movement(self,floors):
         global MoveRight , MoveLeft ,x,y,xPos,yPos,frame,FALLING,dir,JUMPKEYDOWN
         global play
@@ -28,10 +34,6 @@ class PLAYER:
             if(MoveRight == True and MoveLeft == False):
                 frame = ( frame + 1 ) % 10
                 self.Right_Run.clip_draw(frame*(self.Right_Run.w//10), 0, self.Right_Run.w//10, self.Right_Run.h,x,y)
-                # for floor in floors:
-                #     if(floor.x1 > x + self.Right_Run.w//10 or floor.x2 < x - self.Right_Run.w//10 ) :
-                #             JUMPKEYDOWN , FALLING = True , True
-                #             yPos = JUMPHEIGHT
                 delay(0.01)
             elif(MoveRight == False and MoveLeft == True):
                 frame = ( frame + 1 ) % 10
@@ -86,35 +88,56 @@ class PLAYER:
             if FALLING == False: # 점프로 올라가는 애니메이션
                 y += yPos
                 # 점프로 올라갈때 벽에 부딪히면 못올라가게.
-                for floor in floors:
-                    if floor.y2 < y + self.Right_Jump.h//2 and floor.y1 > y + self.Right_Jump.h//2 and floor.x1 < x and floor.x2 > x:
+                if (self.level+1 < len(floors)):
+                    if(floors[self.level+1].y2 < y + self.Right_Jump.h//2 
+                    and floors[self.level+1].y1 > y + self.Right_Jump.h//2 
+                    and floors[self.level+1].x1 < x and floors[self.level+1].x2 > x):
                         y -= yPos
             elif FALLING == True: # 점프 이후 떨어지는 애니메이션
                 if yPos <= JUMPHEIGHT : # 체공 시간 이후 떨어지게
                     y -= yPos
                     # 떨어질때 floor를 밟음.
-                    for floor in floors:
-                        if (floor.y2 < y - self.Right_Fall.h//2 and floor.y1 > y - self.Right_Fall.h//2 
-                        and floor.x1 < x and floor.x2 > x):
-                            y = floor.y1 + self.Right_Idle.h//2
+                    if (self.level+1 < len(floors)):
+                        if (floors[self.level+1].y2 < y - self.Right_Idle.h//2 
+                        and floors[self.level+1].y1 > y - self.Right_Idle.h//2 
+                        and floors[self.level+1].x1 < x and floors[self.level+1].x2 > x):
+                            y = floors[self.level+1].y1 + self.Right_Idle.h//2
                             yPos = 1
                             # Floor 레벨 동일 적용 플레이어가 위치한 발판의 인덱스
-                            self.level = floor.level
+                            self.level = self.level + 1
+                            self.CompliteLevel = self.level
+                        elif (floors[self.level].y2 < y - self.Right_Idle.h//2 
+                        and floors[self.level].y1 > y - self.Right_Idle.h//2 
+                        and floors[self.level].x1 < x and floors[self.level].x2 > x):
+                            y += yPos
+                            self.CompliteLevel = self.level
+                        elif (self.level != 0) :
+                            if (floors[self.level-1].y2 < y - self.Right_Idle.h//2 
+                            and floors[self.level-1].y1 > y - self.Right_Idle.h//2 
+                            and floors[self.level-1].x1 < x and floors[self.level-1].x2 > x):
+                                y += yPos
+                                self.level = self.level - 1
+                                self.CompliteLevel = self.level
+        
             yPos -= 1
             if(yPos == 0): # 첫 번째 ypos가 0이 되는 경우는 점프까 끝난상태 두번째는 떨어지는 상태 전환 
                 if FALLING == True :
                     FALLING = False
                     JUMPKEYDOWN = False
-                    if(floors[self.level].x1 > x + (self.Right_Run.w//10)//2 or floors[self.level].x2 < x - (self.Right_Run.w//10)//2):
+                    # 현재 floor의 밖에 있다 (떨어져야함)
+                    if(floors[self.level].x1 > x + (self.Right_Run.w//10)//2 
+                    or floors[self.level].x2 < x - (self.Right_Run.w//10)//2):
                         JUMPKEYDOWN , FALLING = True , True
                         yPos = JUMPHEIGHT
-                        y -= yPos 
+                        y -= yPos
                         yPos -= 1
+                        self.level -= 1
                 else :
                     FALLING = True
                     yPos = JUMPHEIGHT + 7 # + 7 은 공중에서 체공하는 시간정도를 나타냄.
         else : # JUMPKEYDOWN 이 False 일때
-            if(floors[self.level].x1 > x + (self.Right_Run.w//10)//2 or floors[self.level].x2 < x - (self.Right_Run.w//10)//2):
+            if(floors[self.level].x1 > x + (self.Right_Run.w//10)//2 
+            or floors[self.level].x2 < x - (self.Right_Run.w//10)//2):
                 JUMPKEYDOWN , FALLING = True , True
                 yPos = JUMPHEIGHT
     
