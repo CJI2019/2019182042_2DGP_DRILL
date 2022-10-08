@@ -5,16 +5,88 @@ JUMPHEIGHT = 14
 
 JUMPKEYDOWN = False
 
-Player_Left_Idle = load_image('Player\player_left_idle.png')
-Player_Right_Idle = load_image('Player\player_right_idle.png')
+class PLAYER:
+    def __init__(self):
+        self.Left_Idle = load_image('Player\Player_left_idle.png')
+        self.Right_Idle = load_image('Player\Player_right_idle.png')
 
-Player_Left_Run = load_image('Player\player_left_run.png')
-Player_Right_Run = load_image('Player\player_right_run.png')
+        self.Left_Run = load_image('Player\Player_left_run.png')
+        self.Right_Run = load_image('Player\Player_right_run.png')
 
-Player_Left_Jump = load_image('Player\player_left_jump.png')
-Player_Right_Jump = load_image('Player\player_right_jump.png')
-Player_Left_Fall = load_image('Player\player_left_fall.png')
-Player_Right_Fall = load_image('Player\player_right_fall.png')
+        self.Left_Jump = load_image('Player\Player_left_jump.png')
+        self.Right_Jump = load_image('Player\Player_right_jump.png')
+        self.Left_Fall = load_image('Player\Player_left_fall.png')
+        self.Right_Fall = load_image('Player\Player_right_fall.png')
+            
+    def Player_Movement(self):
+
+        global MoveRight , MoveLeft ,x,y,xPos,yPos,frame,FALLING,dir,JUMPKEYDOWN
+        global play
+
+        if(JUMPKEYDOWN == False):
+            if(MoveRight == True and MoveLeft == False):
+                frame = ( frame + 1 ) % 10
+                self.Right_Run.clip_draw(frame*(self.Right_Run.w//10), 0, self.Right_Run.w//10, self.Right_Run.h,x,y)
+                delay(0.01)
+            elif(MoveRight == False and MoveLeft == True):
+                frame = ( frame + 1 ) % 10
+                self.Left_Run.clip_draw(frame*(self.Left_Run.w//10), 0, self.Left_Run.w//10, self.Left_Run.h,x,y)
+                delay(0.01)
+            elif(MoveRight == False and MoveLeft == False):
+                frame += 1
+                if(dir == 0):
+                    self.Right_Idle.clip_draw(((frame//5) % 7)*(self.Right_Idle.w//7), 0,self.Right_Idle.w//7,self.Right_Idle.h,x,y)
+                else :
+                    self.Left_Idle.clip_draw(((frame//5) % 7)*(self.Left_Idle.w//7), 0,self.Left_Idle.w//7,self.Left_Idle.h,x,y)
+                delay(0.01)
+        elif (JUMPKEYDOWN == True):
+            if FALLING == False: # 점프로 올라가는 애니메이션
+                y += yPos
+                if dir == 0: 
+                    if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
+                        self.Right_Jump.clip_draw(0*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,x,y)
+                    elif (yPos > (JUMPHEIGHT /3)):
+                        self.Right_Jump.clip_draw(1*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,x,y)
+                    elif (yPos > (JUMPHEIGHT /3)*0):
+                        self.Right_Jump.clip_draw(2*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,x,y)
+                elif dir == 1:
+                    if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
+                        self.Left_Jump.clip_draw(0*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,x,y)
+                    elif (yPos > (JUMPHEIGHT /3)):
+                        self.Left_Jump.clip_draw(1*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,x,y)
+                    elif (yPos > (JUMPHEIGHT /3)*0):
+                        self.Left_Jump.clip_draw(2*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,x,y)
+                
+            elif FALLING == True: # 점프 이후 떨어지는 애니메이션
+                if yPos <= JUMPHEIGHT : # 체공 시간 이후 떨어지게
+                    y -= yPos
+                if dir == 0: 
+                    if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
+                        self.Right_Fall.clip_draw(0*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)
+                    elif (yPos > (JUMPHEIGHT /3)):
+                        self.Right_Fall.clip_draw(1*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)
+                    elif (yPos > (JUMPHEIGHT /3)*0):
+                        self.Right_Fall.clip_draw(2*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)    
+                elif dir == 1:
+                    if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
+                        self.Left_Fall.clip_draw(2*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
+                    elif (yPos > (JUMPHEIGHT /3)):
+                        self.Left_Fall.clip_draw(1*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
+                    elif (yPos > (JUMPHEIGHT /3)*0):
+                        self.Left_Fall.clip_draw(0*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
+
+            yPos -= 1
+            if(yPos == 0 ):
+                if FALLING == True :
+                    FALLING = False
+                    JUMPKEYDOWN = False
+                else :
+                    FALLING = True
+                    yPos = JUMPHEIGHT + 7 # + 7 은 공중에서 체공하는 시간정도를 나타냄.
+            delay(0.01)
+
+            
+        x += xPos * 4
 
 MoveRight ,MoveLeft = False , False
 
@@ -77,74 +149,4 @@ def Current_KeyDown_Status():
             temp +=1
     if temp == 1 :
         MoveRight ,MoveLeft = False ,False
-
-
-def Player_Movement():
-    global Player_Left_Idle,Player_Right_Idle,Player_Left_Run,Player_Right_Run,Player_Left_Jump,Player_Right_Jump
-    global Player_Left_Fall,Player_Right_Fall ,MoveRight , MoveLeft ,x,y,xPos,yPos,frame,FALLING,dir,JUMPKEYDOWN
-    global play
-
-    if(JUMPKEYDOWN == False):
-        if(MoveRight == True and MoveLeft == False):
-            frame = ( frame + 1 ) % 10
-            Player_Right_Run.clip_draw(frame*(Player_Right_Run.w//10), 0, Player_Right_Run.w//10, Player_Right_Run.h,x,y)
-            delay(0.01)
-        elif(MoveRight == False and MoveLeft == True):
-            frame = ( frame + 1 ) % 10
-            Player_Left_Run.clip_draw(frame*(Player_Left_Run.w//10), 0, Player_Left_Run.w//10, Player_Left_Run.h,x,y)
-            delay(0.01)
-        elif(MoveRight == False and MoveLeft == False):
-            frame += 1
-            if(dir == 0):
-                Player_Right_Idle.clip_draw(((frame//5) % 7)*(Player_Right_Idle.w//7), 0,Player_Right_Idle.w//7,Player_Right_Idle.h,x,y)
-            else :
-                Player_Left_Idle.clip_draw(((frame//5) % 7)*(Player_Left_Idle.w//7), 0,Player_Left_Idle.w//7,Player_Left_Idle.h,x,y)
-            delay(0.01)
-    elif (JUMPKEYDOWN == True):
-        if FALLING == False: # 점프로 올라가는 애니메이션
-            y += yPos
-            if dir == 0: 
-                if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
-                    Player_Right_Jump.clip_draw(0*(Player_Right_Jump.w//3), 0,Player_Right_Jump.w//3,Player_Right_Jump.h,x,y)
-                elif (yPos > (JUMPHEIGHT /3)):
-                    Player_Right_Jump.clip_draw(1*(Player_Right_Jump.w//3), 0,Player_Right_Jump.w//3,Player_Right_Jump.h,x,y)
-                elif (yPos > (JUMPHEIGHT /3)*0):
-                    Player_Right_Jump.clip_draw(2*(Player_Right_Jump.w//3), 0,Player_Right_Jump.w//3,Player_Right_Jump.h,x,y)
-            elif dir == 1:
-                if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
-                    Player_Left_Jump.clip_draw(0*(Player_Left_Jump.w//3), 0,Player_Left_Jump.w//3,Player_Left_Jump.h,x,y)
-                elif (yPos > (JUMPHEIGHT /3)):
-                    Player_Left_Jump.clip_draw(1*(Player_Left_Jump.w//3), 0,Player_Left_Jump.w//3,Player_Left_Jump.h,x,y)
-                elif (yPos > (JUMPHEIGHT /3)*0):
-                    Player_Left_Jump.clip_draw(2*(Player_Left_Jump.w//3), 0,Player_Left_Jump.w//3,Player_Left_Jump.h,x,y)
-            
-        elif FALLING == True: # 점프 이후 떨어지는 애니메이션
-            if yPos <= JUMPHEIGHT : # 체공 시간 이후 떨어지게
-                y -= yPos
-            if dir == 0: 
-                if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
-                    Player_Right_Fall.clip_draw(0*(Player_Right_Fall.w//3), 0,Player_Right_Fall.w//3,Player_Right_Fall.h,x,y)
-                elif (yPos > (JUMPHEIGHT /3)):
-                    Player_Right_Fall.clip_draw(1*(Player_Right_Fall.w//3), 0,Player_Right_Fall.w//3,Player_Right_Fall.h,x,y)
-                elif (yPos > (JUMPHEIGHT /3)*0):
-                    Player_Right_Fall.clip_draw(2*(Player_Right_Fall.w//3), 0,Player_Right_Fall.w//3,Player_Right_Fall.h,x,y)    
-            elif dir == 1:
-                if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
-                    Player_Left_Fall.clip_draw(2*(Player_Left_Fall.w//3), 0,Player_Left_Fall.w//3,Player_Left_Fall.h,x,y)
-                elif (yPos > (JUMPHEIGHT /3)):
-                    Player_Left_Fall.clip_draw(1*(Player_Left_Fall.w//3), 0,Player_Left_Fall.w//3,Player_Left_Fall.h,x,y)
-                elif (yPos > (JUMPHEIGHT /3)*0):
-                    Player_Left_Fall.clip_draw(0*(Player_Left_Fall.w//3), 0,Player_Left_Fall.w//3,Player_Left_Fall.h,x,y)
-
-        yPos -= 1
-        if(yPos == 0 ):
-            if FALLING == True :
-                FALLING = False
-                JUMPKEYDOWN = False
-            else :
-                FALLING = True
-                yPos = JUMPHEIGHT + 7 # + 7 은 공중에서 체공하는 시간정도를 나타냄.
-        delay(0.01)
-
-        
-    x += xPos * 4
+ 

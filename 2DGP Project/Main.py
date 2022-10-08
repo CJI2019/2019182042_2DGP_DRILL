@@ -9,10 +9,12 @@ import PlayerObject
 
 BackGround = load_image("back_2_2000.png")
 Main_Floor = load_image("Floor\main_floor_1.png")
-
 BackGroundHeight = 0
 
-PlayerObject.y =(BackGround_HEIGHT//20) + (Main_Floor.h//2) + (PlayerObject.Player_Right_Idle.h//2) 
+# 플레이어 객체 생성
+Player = PlayerObject.PLAYER()
+
+PlayerObject.y =(BackGround_HEIGHT//20) + (Main_Floor.h//2) + (Player.Right_Idle.h//2) 
 
 while PlayerObject.play:
     clear_canvas()
@@ -22,7 +24,7 @@ while PlayerObject.play:
     # 0.1 씩 배경 이미지 내려가게함.
     BackGroundHeight += 0.1
 
-    PlayerObject.Player_Movement()
+    Player.Player_Movement()
     PlayerObject.KeyDown_event()
 
     update_canvas()
