@@ -25,12 +25,13 @@ while PlayerObject.play:
 
     # 0.1 씩 배경 이미지 내려가게함.
     BackGroundHeight += 0.1
-    FloorObject.FloorChange(Player,floors)
+    
 
     for floor in floors:
         floor.Draw()
     Player.Player_Movement(floors)
     Player.KeyDown_event()
+    FloorObject.FloorChange(Player,floors)
     
     update_canvas()
 

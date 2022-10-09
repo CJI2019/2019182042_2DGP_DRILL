@@ -111,7 +111,7 @@ class PLAYER:
                         and floors[self.level].x1 < x and floors[self.level].x2 > x):
                             y += yPos
                             self.CompliteLevel = self.level
-                        elif (self.level != 0) :
+                        elif (self.level != 0):
                             if (floors[self.level-1].y2 < y - self.Right_Idle.h//2 
                             and floors[self.level-1].y1 > y - self.Right_Idle.h//2 
                             and floors[self.level-1].x1 < x and floors[self.level-1].x2 > x):
@@ -132,6 +132,8 @@ class PLAYER:
                         y -= yPos
                         yPos -= 1
                         self.level -= 1
+                    else:
+                        self.CompliteLevel = self.level
                 else :
                     FALLING = True
                     yPos = JUMPHEIGHT + 7 # + 7 은 공중에서 체공하는 시간정도를 나타냄.
@@ -140,6 +142,7 @@ class PLAYER:
             or floors[self.level].x2 < x - (self.Right_Run.w//10)//2):
                 JUMPKEYDOWN , FALLING = True , True
                 yPos = JUMPHEIGHT
+                self.level -= 1
     
     def KeyDown_event(self):
         global play , xPos , yPos ,MoveLeft ,MoveRight ,dir,JUMPKEYDOWN, FALLING,Current_KeyDown_List

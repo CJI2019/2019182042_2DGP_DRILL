@@ -42,9 +42,11 @@ FloorLevelAnimeSpeed = 9
 
 def FloorChange(Player,floors):
     global Player_Floor_Level ,FloorLevelAnimeCount,FloorLevelAnimeSpeed
+    
     if (Player_Floor_Level != Player.CompliteLevel and FloorLevelAnimeCount == 0):
         FloorLevelAnimeCount = (Player_Floor_Level - Player.CompliteLevel) * FloorLevelAnimeSpeed # 높아 지면 음수 
         Player_Floor_Level = Player.CompliteLevel
+        
     if(FloorLevelAnimeCount != 0):
         # 한 단계당 FloorLevelAnimeSpeed 에 따라 위치 변함.
         for floor in floors:
