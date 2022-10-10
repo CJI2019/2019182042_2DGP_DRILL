@@ -4,7 +4,6 @@ BackGround_WITDH ,BackGround_HEIGHT  = 600 , 600
 JUMPHEIGHT = 14
 
 JUMPKEYDOWN = False
-
 class PLAYER:
     def __init__(self):
         self.Left_Idle = load_image('Player\Player_left_idle.png')
@@ -32,12 +31,12 @@ class PLAYER:
 
         if(JUMPKEYDOWN == False):
             if(MoveRight == True and MoveLeft == False):
-                frame = ( frame + 1 ) % 10
-                self.Right_Run.clip_draw(frame*(self.Right_Run.w//10), 0, self.Right_Run.w//10, self.Right_Run.h,x,y)
+                frame += 1
+                self.Right_Run.clip_draw(((frame//2) % 10)*(self.Right_Run.w//10), 0, self.Right_Run.w//10, self.Right_Run.h,x,y)
                 delay(0.01)
             elif(MoveRight == False and MoveLeft == True):
-                frame = ( frame + 1 ) % 10
-                self.Left_Run.clip_draw(frame*(self.Left_Run.w//10), 0, self.Left_Run.w//10, self.Left_Run.h,x,y)
+                frame += 1
+                self.Left_Run.clip_draw(((frame//2) % 10)*(self.Left_Run.w//10), 0, self.Left_Run.w//10, self.Left_Run.h,x,y)
                 delay(0.01)
             elif(MoveRight == False and MoveLeft == False):
                 frame += 1
@@ -56,7 +55,7 @@ class PLAYER:
                     elif (yPos > (JUMPHEIGHT /3)*0):
                         self.Right_Jump.clip_draw(2*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,x,y)
                 elif dir == 1:
-                    if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
+                    if(yPos > (JUMPHEIGHT /3)*2):
                         self.Left_Jump.clip_draw(0*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,x,y)
                     elif (yPos > (JUMPHEIGHT /3)):
                         self.Left_Jump.clip_draw(1*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,x,y)
@@ -65,14 +64,14 @@ class PLAYER:
                 
             elif FALLING == True: # 점프 이후 떨어지는 애니메이션
                 if dir == 0: 
-                    if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
+                    if(yPos > (JUMPHEIGHT /3)*2): # 하강 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
                         self.Right_Fall.clip_draw(0*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)
                     elif (yPos > (JUMPHEIGHT /3)):
                         self.Right_Fall.clip_draw(1*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)
                     elif (yPos > (JUMPHEIGHT /3)*0):
                         self.Right_Fall.clip_draw(2*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)    
                 elif dir == 1:
-                    if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
+                    if(yPos > (JUMPHEIGHT /3)*2):
                         self.Left_Fall.clip_draw(2*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
                     elif (yPos > (JUMPHEIGHT /3)):
                         self.Left_Fall.clip_draw(1*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
