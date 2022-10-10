@@ -1,3 +1,4 @@
+from math import floor
 from pico2d import *
 BackGround_WITDH ,BackGround_HEIGHT  = 600 , 600
 # 점프 높이
@@ -142,44 +143,6 @@ class PLAYER:
                 JUMPKEYDOWN , FALLING = True , True
                 yPos = JUMPHEIGHT
                 self.level -= 1
-    
-    def KeyDown_event(self):
-        global play , xPos , yPos ,MoveLeft ,MoveRight ,dir,JUMPKEYDOWN, FALLING,Current_KeyDown_List
-        global x,y
-        events = get_events()
-
-        for event in events:
-            if(event.type == SDL_QUIT or event.key == SDLK_ESCAPE):
-                play = False
-            elif (event.type == SDL_KEYDOWN):
-                if(event.key == SDLK_RIGHT):
-                    MoveRight ,MoveLeft = True ,False
-                    dir = 0
-                    Current_KeyDown_List[0] = 1
-                    xPos += 1
-                if(event.key == SDLK_LEFT):
-                    MoveRight ,MoveLeft = False , True
-                    dir = 1
-                    Current_KeyDown_List[1] = 1
-                    xPos -= 1
-                if(event.key == SDLK_SPACE):
-                    if yPos != 0:
-                        continue
-                    yPos = JUMPHEIGHT
-                    JUMPKEYDOWN = True
-            elif (event.type == SDL_KEYUP):
-                if(event.key == SDLK_RIGHT):
-                    Current_KeyDown_Status()
-                    Current_KeyDown_List[0] = 0
-                    if Current_KeyDown_List[1] == 1 :
-                        MoveRight ,MoveLeft = False , True
-                    xPos -= 1
-                if(event.key == SDLK_LEFT):
-                    Current_KeyDown_Status()
-                    Current_KeyDown_List[1] = 0
-                    if Current_KeyDown_List[0] == 1 :
-                        MoveRight ,MoveLeft = True , False
-                    xPos += 1
 
 
 MoveRight ,MoveLeft = False , False
@@ -208,3 +171,68 @@ def Current_KeyDown_Status():
     if temp == 1 :
         MoveRight ,MoveLeft = False ,False
  
+import FloorObject
+floortype = 1 # map tool variable
+def KeyDown_event(floors): # map tool variable
+    global play , xPos , yPos ,MoveLeft ,MoveRight ,dir,JUMPKEYDOWN, FALLING,Current_KeyDown_List
+    global x,y , floortype
+    events = get_events()
+
+    for event in events:
+        if(event.type == SDL_QUIT or event.key == SDLK_ESCAPE):
+            play = False
+            # map tool start
+        elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
+            floors += [FloorObject.FLOOR(event.x,600-event.y,floortype)]
+        elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
+            floors.pop(len(floors)-1)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_1:
+            floortype = 1
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_2:
+            floortype = 2
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_3:
+            floortype = 3
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_4:
+            floortype = 4
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_5:
+            floortype = 5
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_F1: # 현재 플로어 정보 출력
+            print('\nx 좌표 출력')
+            for floor in floors:
+                print(floor.xPos,end = ',')
+            print('\ny 좌표 출력')
+            for floor in floors:
+                print(floor.yPos,end = ',') 
+            print('\n이미지 타입 출력')
+            for floor in floors:
+                print(floor.floortype,end = ',') 
+            print('\n') # map tool end
+        elif (event.type == SDL_KEYDOWN):
+            if(event.key == SDLK_RIGHT):
+                MoveRight ,MoveLeft = True ,False
+                dir = 0
+                Current_KeyDown_List[0] = 1
+                xPos += 1
+            if(event.key == SDLK_LEFT):
+                MoveRight ,MoveLeft = False , True
+                dir = 1
+                Current_KeyDown_List[1] = 1
+                xPos -= 1
+            if(event.key == SDLK_SPACE):
+                if yPos != 0:
+                    continue
+                yPos = JUMPHEIGHT
+                JUMPKEYDOWN = True
+        elif (event.type == SDL_KEYUP):
+            if(event.key == SDLK_RIGHT):
+                Current_KeyDown_Status()
+                Current_KeyDown_List[0] = 0
+                if Current_KeyDown_List[1] == 1 :
+                    MoveRight ,MoveLeft = False , True
+                xPos -= 1
+            if(event.key == SDLK_LEFT):
+                Current_KeyDown_Status()
+                Current_KeyDown_List[1] = 0
+                if Current_KeyDown_List[0] == 1 :
+                    MoveRight ,MoveLeft = True , False
+                xPos += 1

@@ -20,17 +20,16 @@ PlayerObject.y = (floors[0].y1) + (Player.Right_Idle.h//2)
 
 while PlayerObject.play:
     clear_canvas()
-    BackGround.clip_draw(0,(int)(BackGroundHeight),BackGround.w,BackGround.h
+    BackGround.clip_draw(0,(int)(BackGroundHeight),BackGround.w,BackGround.h-(int)(BackGroundHeight)
                 ,BackGround_WITDH,BackGround_HEIGHT)
 
     # 0.1 씩 배경 이미지 내려가게함.
     BackGroundHeight += 0.1
     
-
     for floor in floors:
         floor.Draw()
     Player.Player_Movement(floors)
-    Player.KeyDown_event()
+    PlayerObject.KeyDown_event(floors)
     FloorObject.FloorChange(Player,floors)
     
     update_canvas()
