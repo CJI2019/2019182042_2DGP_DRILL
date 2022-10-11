@@ -173,7 +173,7 @@ def Current_KeyDown_Status():
  
 import FloorObject
 floortype = 1 # map tool variable
-def KeyDown_event(floors): # map tool variable
+def KeyDown_event(floors,player): # map tool variable
     global play , xPos , yPos ,MoveLeft ,MoveRight ,dir,JUMPKEYDOWN, FALLING,Current_KeyDown_List
     global x,y , floortype
     events = get_events()
@@ -186,6 +186,7 @@ def KeyDown_event(floors): # map tool variable
             floors += [FloorObject.FLOOR(event.x,600-event.y,floortype)]
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
             floors.pop(len(floors)-1)
+            FloorObject.level -= 1
         elif event.type == SDL_KEYDOWN and event.key == SDLK_1:
             floortype = 1
         elif event.type == SDL_KEYDOWN and event.key == SDLK_2:
@@ -202,7 +203,7 @@ def KeyDown_event(floors): # map tool variable
                 print(floor.xPos,end = ',')
             print('\ny 좌표 출력')
             for floor in floors:
-                print(floor.yPos,end = ',') 
+                print(floor.yPos+(100*player.level),end = ',')
             print('\n이미지 타입 출력')
             for floor in floors:
                 print(floor.floortype,end = ',') 

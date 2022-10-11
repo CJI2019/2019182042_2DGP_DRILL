@@ -29,7 +29,7 @@ while PlayerObject.play:
     for floor in floors:
         floor.Draw()
     Player.Player_Movement(floors)
-    PlayerObject.KeyDown_event(floors)
+    PlayerObject.KeyDown_event(floors,Player)
     FloorObject.FloorChange(Player,floors)
     
     update_canvas()
