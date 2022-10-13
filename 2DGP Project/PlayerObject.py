@@ -185,8 +185,9 @@ def KeyDown_event(floors,player): # map tool variable
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
             floors += [FloorObject.FLOOR(event.x,600-event.y,floortype)]
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-            floors.pop(len(floors)-1)
-            FloorObject.level -= 1
+            if floors[-1].level != player.level:
+                floors.pop(len(floors)-1)
+                FloorObject.level -= 1
         elif event.type == SDL_KEYDOWN and event.key == SDLK_1:
             floortype = 1
         elif event.type == SDL_KEYDOWN and event.key == SDLK_2:
