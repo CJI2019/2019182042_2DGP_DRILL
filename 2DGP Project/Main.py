@@ -31,6 +31,7 @@ while PlayerObject.play:
         floor.Draw()
     Player.Player_Movement(floors)
     PlayerObject.KeyDown_event(floors,Player)
+    FloorObject.FloorChange(Player,floors,Water)
     
     Water.drawAupdate()
 

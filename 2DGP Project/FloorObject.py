@@ -58,7 +58,7 @@ FloorLevelAnimeCount = 0
 # floor 에 따른 애니메이션 속도
 FloorLevelAnimeSpeed = 10 
 
-def FloorChange(Player,floors):
+def FloorChange(Player,floors,Water):
     global Player_Floor_Level ,FloorLevelAnimeCount,FloorLevelAnimeSpeed
 
     if (Player_Floor_Level != Player.CompliteLevel and FloorLevelAnimeCount == 0):
@@ -74,6 +74,10 @@ def FloorChange(Player,floors):
             else :
                 floor.y1 -= FloorLevelAnimeSpeed; floor.y2 -= FloorLevelAnimeSpeed
                 floor.yPos -= FloorLevelAnimeSpeed
+        if FloorLevelAnimeCount > 0:
+            Water.y += FloorLevelAnimeSpeed
+        else :
+            Water.y -= FloorLevelAnimeSpeed
         # 플레이어 좌표 y값 floor 에 맞추기
         Player.CoordinateInput(floors[Player.CompliteLevel].y1 + Player.Right_Idle.h//2)
         if FloorLevelAnimeCount > 0 :
