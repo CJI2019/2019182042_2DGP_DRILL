@@ -1,6 +1,6 @@
 from math import floor
 from pico2d import *
-BackGround_WITDH ,BackGround_HEIGHT  = 600 , 600
+GameWindow_WITDH ,GameWindow_HEIGHT  = 600 , 600
 # 점프 높이
 JUMPHEIGHT = 14
 
@@ -81,7 +81,7 @@ class PLAYER:
             delay(0.01)
  
         x += xPos * 4
-        if x + (self.Right_Run.w//10)//2 > BackGround_WITDH or x - (self.Right_Run.w//10)//2 < 0: 
+        if x + (self.Right_Run.w//10)//2 > GameWindow_WITDH or x - (self.Right_Run.w//10)//2 < 0: 
             x -= xPos * 4
 
         if JUMPKEYDOWN :

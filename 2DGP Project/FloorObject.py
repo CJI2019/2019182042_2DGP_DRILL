@@ -1,10 +1,11 @@
 from pico2d import *
 import random
-BackGround_WITDH , BackGround_HEIGHT = 600,600
+# import WaterObject
+GameWindow_WITDH , GameWindow_HEIGHT = 600,600
 
 # floor 를 저장 할 값
-x = [BackGround_WITDH//2]
-y = [BackGround_HEIGHT//20]
+x = [GameWindow_WITDH//2]
+y = [GameWindow_HEIGHT//20]
 # while True:       # map tool 용 완성시 주석 해제
 #     r = random.randint(0,1)
 #     if r == 0: 
@@ -23,8 +24,8 @@ class FLOOR:
     def __init__(self,x=None,y=None,floortype = None):
         # global x,y
         global xcount,ycount,level
-        if x == None: x = BackGround_WITDH//2
-        if y == None: y = BackGround_HEIGHT//20
+        if x == None: x = GameWindow_WITDH//2
+        if y == None: y = GameWindow_HEIGHT//20
         if floortype == None:
             floortype = random.randint(0,5) +1 
         self.image = load_image("Floor/floor_0{0}.png".format(floortype))

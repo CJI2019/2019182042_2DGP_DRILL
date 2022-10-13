@@ -1,8 +1,9 @@
 from pico2d import *
 
-BackGround_WITDH ,BackGround_HEIGHT  = 600 , 600
+GameWindow_WITDH ,GameWindow_HEIGHT  = 600 , 600
 #open canvas를 먼저 해야 load image 가능
 open_canvas(BackGround_WITDH,BackGround_HEIGHT)
+open_canvas(GameWindow_WITDH,GameWindow_HEIGHT)
 
 # Player 정보가 담겨있다
 import PlayerObject
