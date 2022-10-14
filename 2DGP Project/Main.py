@@ -34,7 +34,7 @@ while PlayerObject.play:
     FloorObject.FloorChange(Player,floors,Water)
     
     Water.drawAupdate()
-
+    Water.Crash(Player,PlayerObject.y)
     update_canvas()
 
 close_canvas()
