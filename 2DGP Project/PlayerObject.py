@@ -1,4 +1,3 @@
-from math import floor
 from pico2d import *
 GameWindow_WITDH ,GameWindow_HEIGHT  = 600 , 600
 # 점프 높이
@@ -172,10 +171,13 @@ def Current_KeyDown_Status():
         MoveRight ,MoveLeft = False ,False
  
 import FloorObject
+import WallObject
 floortype = 1 # map tool variable
-def KeyDown_event(floors,player): # map tool variable
+tool_name = 'floor' # map tool type
+
+def KeyDown_event(floors,player,walls): # map tool variable
     global play , xPos , yPos ,MoveLeft ,MoveRight ,dir,JUMPKEYDOWN, FALLING,Current_KeyDown_List
-    global x,y , floortype
+    global x,y , floortype , tool_name
     events = get_events()
 
     for event in events:
@@ -183,11 +185,23 @@ def KeyDown_event(floors,player): # map tool variable
             play = False
             # map tool start
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
-            floors += [FloorObject.FLOOR(event.x,600-event.y,floortype)]
+            if tool_name == 'floor':
+                floors += [FloorObject.FLOOR(event.x,600-event.y,floortype)]
+            elif tool_name == 'wall':
+                walls += [WallObject.WALL(event.x,600-event.y)]
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-            if floors[-1].level != player.level:
-                floors.pop(len(floors)-1)
-                FloorObject.level -= 1
+            if tool_name == 'floor':
+                if floors[-1].level != player.level:
+                    floors.pop(len(floors)-1)
+                    FloorObject.level -= 1
+            elif tool_name == 'wall':
+                walls.pop(len(walls)-1)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_F1:
+            tool_name = 'wall'
+            print("wall tool")
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_F2:
+            tool_name = 'floor'
+            print("floor tool")
         elif event.type == SDL_KEYDOWN and event.key == SDLK_1:
             floortype = 1
         elif event.type == SDL_KEYDOWN and event.key == SDLK_2:
