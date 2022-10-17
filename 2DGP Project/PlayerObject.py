@@ -23,7 +23,7 @@ class PLAYER:
         self.x1, self.y1 = self.x - (self.Right_Idle.w//8), self.y + (self.Right_Idle.h//2)
         # 우 하
         self.x2, self.y2 = self.x + (self.Right_Idle.w//8), self.y - (self.Right_Idle.h//2)
-        
+        self.Wallpoint = -1
         # 현재 floor 판별
         self.level = 0
         # floor 확정
@@ -34,7 +34,6 @@ class PLAYER:
     def WallCrash(self): # 벽에 부딪히면 호출
         global xPos
         self.x -= xPos * 4 ; self.x1 -= xPos * 4; self.x2 -= xPos * 4
-
 
     def Player_Movement(self,floors,walls):
         global MoveRight , MoveLeft ,xPos,yPos,frame,FALLING,dir,JUMPKEYDOWN
@@ -95,12 +94,17 @@ class PLAYER:
         self.x1 += xPos * 4; self.x2 += xPos * 4
         if self.x2 > GameWindow_WITDH or self.x1 < 0: 
             self.WallCrash()
-        for wall in walls:
-            wall.Crash(self)
+        # enumerate 는 리스트의 인덱스,원소 형식의 튜플을 넘김
+        for idx,wall in enumerate(walls):
+            wall.Crash(self,idx)
+        if self.Wallpoint >= 0 and not JUMPKEYDOWN: # 벽위에 올라갔을때 해당 벽에서 멀어지면 떨어짐.
+            if ((self.x2 + self.x1)//2 < walls[self.Wallpoint].x1 or 
+            (self.x2 + self.x1)//2 > walls[self.Wallpoint].x2):
+                JUMPKEYDOWN =True; FALLING =True ;yPos = JUMPHEIGHT
+                self.Wallpoint = -1
         if JUMPKEYDOWN :
             if FALLING == False: # 점프로 올라가는 애니메이션
                 self.y += yPos ; self.y1 += yPos ;self.y2 += yPos 
-                
                 # 점프로 올라갈때 벽에 부딪히면 못올라가게.
                 if (self.level+1 < len(floors)):
                     if(floors[self.level+1].y2 < self.y + self.Right_Jump.h//2 
@@ -122,18 +126,26 @@ class PLAYER:
                             # Floor 레벨 동일 적용 플레이어가 위치한 발판의 인덱스
                             self.level = self.level + 1
                             self.CompliteLevel = self.level
-                        elif (floors[self.level].y2 < self.y - self.Right_Idle.h//2 
-                        and floors[self.level].y1 > self.y - self.Right_Idle.h//2 
-                        and floors[self.level].x1 < self.x and floors[self.level].x2 > self.x):
-                            self.y += yPos ; self.y1 += yPos ;self.y2 += yPos
+                    if (floors[self.level].y2 < self.y - self.Right_Idle.h//2 
+                    and floors[self.level].y1 > self.y - self.Right_Idle.h//2 
+                    and floors[self.level].x1 < self.x and floors[self.level].x2 > self.x):
+                        # self.y += yPos ; self.y1 += yPos ;self.y2 += yPos
+                        self.y = floors[self.level].y1 + self.Right_Idle.h//2
+                        self.y1 = self.y + (self.Right_Idle.h//2)
+                        self.y2 = self.y - (self.Right_Idle.h//2)
+                        yPos = 1
+                        self.CompliteLevel = self.level
+                    if (self.level != 0):
+                        if (floors[self.level-1].y2 < self.y - self.Right_Idle.h//2 
+                        and floors[self.level-1].y1 > self.y - self.Right_Idle.h//2 
+                        and floors[self.level-1].x1 < self.x and floors[self.level-1].x2 > self.x):
+                            # self.y += yPos ; self.y1 += yPos ;self.y2 += yPos
+                            self.y = floors[self.level-1].y1 + self.Right_Idle.h//2
+                            self.y1 = self.y + (self.Right_Idle.h//2)
+                            self.y2 = self.y - (self.Right_Idle.h//2)
+                            yPos = 1
+                            self.level = self.level - 1
                             self.CompliteLevel = self.level
-                        elif (self.level != 0):
-                            if (floors[self.level-1].y2 < self.y - self.Right_Idle.h//2 
-                            and floors[self.level-1].y1 > self.y - self.Right_Idle.h//2 
-                            and floors[self.level-1].x1 < self.x and floors[self.level-1].x2 > self.x):
-                                self.y += yPos ; self.y1 += yPos ;self.y2 += yPos
-                                self.level = self.level - 1
-                                self.CompliteLevel = self.level
         
             yPos -= 1
             if(yPos == 0): # 첫 번째 ypos가 0이 되는 경우는 점프까 끝난상태 두번째는 떨어지는 상태 전환 
@@ -149,11 +161,17 @@ class PLAYER:
                         yPos -= 1
                         self.level -= 1
                     else:
+                        # 같은 레벨에 floor로 떨어지는데 그 레벨에 맞지 않는 높이라면 더욱 떨어지게
+                        if (floors[self.level].y1 + 5 < self.y2):
+                            JUMPKEYDOWN , FALLING = True , True
+                            yPos = JUMPHEIGHT
+                            self.y -= yPos ; self.y1 -= yPos ;self.y2 -= yPos
+                            yPos -= 1
                         self.CompliteLevel = self.level
                 else :
                     FALLING = True
                     yPos = JUMPHEIGHT + 7 # + 7 은 공중에서 체공하는 시간정도를 나타냄.
-        else : # JUMPKEYDOWN 이 False 일때
+        elif (not JUMPKEYDOWN and self.Wallpoint == -1) : # JUMPKEYDOWN 이 False 일때 벽위에 있지 않을때
             if(floors[self.level].x1 > self.x + (self.Right_Run.w//10)//2 
             or floors[self.level].x2 < self.x - (self.Right_Run.w//10)//2):
                 JUMPKEYDOWN , FALLING = True , True

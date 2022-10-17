@@ -39,8 +39,8 @@ while PlayerObject.play:
     PlayerObject.KeyDown_event(floors,Player,walls)
     FloorObject.FloorChange(Player,floors,Water,walls)
     
-    # Water.drawAupdate()
-    # Water.Crash(Player,PlayerObject.y)
+    Water.drawAupdate()
+    Water.Crash(Player)
     update_canvas()
 
 close_canvas()
