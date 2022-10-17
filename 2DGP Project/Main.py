@@ -8,6 +8,7 @@ open_canvas(GameWindow_WITDH,GameWindow_HEIGHT)
 import PlayerObject
 import FloorObject
 import WaterObject
+import WallObject
 
 BackGround = load_image("back_2_2000.png")
 BackGroundHeight = 0
@@ -16,8 +17,11 @@ BackGroundHeight = 0
 # 객체 생성
 Water = WaterObject.WATER()
 floors = [FloorObject.FLOOR() for i in range(FloorObject.SizeOfFloor())]
+walls = [ ]
 Player = PlayerObject.PLAYER() 
-PlayerObject.y = (floors[0].y1) + (Player.Right_Idle.h//2) 
+Player.y = (floors[0].y1) + (Player.Right_Idle.h//2) 
+Player.x1, Player.y1 = Player.x - (Player.Right_Idle.w//8), Player.y + (Player.Right_Idle.h//2)
+Player.x2, Player.y2 = Player.x + (Player.Right_Idle.w//8), Player.y - (Player.Right_Idle.h//2)
 
 while PlayerObject.play:
     clear_canvas()
@@ -29,12 +33,14 @@ while PlayerObject.play:
         BackGroundHeight = 0
     for floor in floors:
         floor.Draw()
-    Player.Player_Movement(floors)
-    PlayerObject.KeyDown_event(floors,Player)
+    for wall in walls:
+        wall.Draw()
+    Player.Player_Movement(floors,walls)
+    PlayerObject.KeyDown_event(floors,Player,walls)
     FloorObject.FloorChange(Player,floors,Water)
     
-    Water.drawAupdate()
-    Water.Crash(Player,PlayerObject.y)
+    # Water.drawAupdate()
+    # Water.Crash(Player,PlayerObject.y)
     update_canvas()
 
 close_canvas()

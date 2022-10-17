@@ -28,6 +28,12 @@ class PLAYER:
         self.level = 0
         # floor 확정
         self.CompliteLevel = 0
+    def CoordinateInput(self,val):
+        self.y = val
+        self.y1 = self.y + (self.Right_Idle.h//2);self.y2 = self.y - (self.Right_Idle.h//2)
+    def WallCrash(self): # 벽에 부딪히면 호출
+        global xPos
+        self.x -= xPos * 4 ; self.x1 -= xPos * 4; self.x2 -= xPos * 4
 
 
     def Player_Movement(self,floors,walls):
@@ -83,11 +89,14 @@ class PLAYER:
                     elif (yPos > (JUMPHEIGHT /3)*0):
                         self.Left_Fall.clip_draw(0*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,self.x,self.y)
             delay(0.01)
- 
-        x += xPos * 4
-        if x + (self.Right_Run.w//10)//2 > GameWindow_WITDH or x - (self.Right_Run.w//10)//2 < 0: 
-            x -= xPos * 4
-
+        
+        # player 좌표 이동
+        self.x += xPos * 4
+        self.x1 += xPos * 4; self.x2 += xPos * 4
+        if self.x2 > GameWindow_WITDH or self.x1 < 0: 
+            self.WallCrash()
+        for wall in walls:
+            wall.Crash(self)
         if JUMPKEYDOWN :
             if FALLING == False: # 점프로 올라가는 애니메이션
                 self.y += yPos ; self.y1 += yPos ;self.y2 += yPos 
