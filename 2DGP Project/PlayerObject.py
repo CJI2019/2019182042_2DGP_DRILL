@@ -1,4 +1,5 @@
 from pico2d import *
+import WallObject
 GameWindow_WITDH ,GameWindow_HEIGHT  = 600 , 600
 # 점프 높이
 JUMPHEIGHT = 14
@@ -16,67 +17,71 @@ class PLAYER:
         self.Right_Jump = load_image('Player\Player_right_jump.png')
         self.Left_Fall = load_image('Player\Player_left_fall.png')
         self.Right_Fall = load_image('Player\Player_right_fall.png')
+        self.x = 300
+        self.y = 300
+        # 좌 상
+        self.x1, self.y1 = self.x - (self.Right_Idle.w//8), self.y + (self.Right_Idle.h//2)
+        # 우 하
+        self.x2, self.y2 = self.x + (self.Right_Idle.w//8), self.y - (self.Right_Idle.h//2)
+        
         # 현재 floor 판별
         self.level = 0
         # floor 확정
         self.CompliteLevel = 0
-    def CoordinateInput(self,ypos):
-        global x,y
-        y = ypos
 
 
-    def Player_Movement(self,floors):
-        global MoveRight , MoveLeft ,x,y,xPos,yPos,frame,FALLING,dir,JUMPKEYDOWN
+    def Player_Movement(self,floors,walls):
+        global MoveRight , MoveLeft ,xPos,yPos,frame,FALLING,dir,JUMPKEYDOWN
         global play
 
         if(JUMPKEYDOWN == False):
             if(MoveRight == True and MoveLeft == False):
                 frame += 1
-                self.Right_Run.clip_draw(((frame//2) % 10)*(self.Right_Run.w//10), 0, self.Right_Run.w//10, self.Right_Run.h,x,y)
+                self.Right_Run.clip_draw(((frame//2) % 10)*(self.Right_Run.w//10), 0, self.Right_Run.w//10, self.Right_Run.h,self.x,self.y)
                 delay(0.01)
             elif(MoveRight == False and MoveLeft == True):
                 frame += 1
-                self.Left_Run.clip_draw(((frame//2) % 10)*(self.Left_Run.w//10), 0, self.Left_Run.w//10, self.Left_Run.h,x,y)
+                self.Left_Run.clip_draw(((frame//2) % 10)*(self.Left_Run.w//10), 0, self.Left_Run.w//10, self.Left_Run.h,self.x,self.y)
                 delay(0.01)
             elif(MoveRight == False and MoveLeft == False):
                 frame += 1
                 if(dir == 0):
-                    self.Right_Idle.clip_draw(((frame//5) % 7)*(self.Right_Idle.w//7), 0,self.Right_Idle.w//7,self.Right_Idle.h,x,y)
+                    self.Right_Idle.clip_draw(((frame//5) % 7)*(self.Right_Idle.w//7), 0,self.Right_Idle.w//7,self.Right_Idle.h,self.x,self.y)
                 else :
-                    self.Left_Idle.clip_draw(((frame//5) % 7)*(self.Left_Idle.w//7), 0,self.Left_Idle.w//7,self.Left_Idle.h,x,y)
+                    self.Left_Idle.clip_draw(((frame//5) % 7)*(self.Left_Idle.w//7), 0,self.Left_Idle.w//7,self.Left_Idle.h,self.x,self.y)
                 delay(0.01)
         elif (JUMPKEYDOWN == True):
             if FALLING == False: # 점프로 올라가는 애니메이션
                 if dir == 0: 
                     if(yPos > (JUMPHEIGHT /3)*2): # 점프 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
-                        self.Right_Jump.clip_draw(0*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,x,y)
+                        self.Right_Jump.clip_draw(0*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,self.x,self.y)
                     elif (yPos > (JUMPHEIGHT /3)):
-                        self.Right_Jump.clip_draw(1*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,x,y)
+                        self.Right_Jump.clip_draw(1*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,self.x,self.y)
                     elif (yPos > (JUMPHEIGHT /3)*0):
-                        self.Right_Jump.clip_draw(2*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,x,y)
+                        self.Right_Jump.clip_draw(2*(self.Right_Jump.w//3), 0,self.Right_Jump.w//3,self.Right_Jump.h,self.x,self.y)
                 elif dir == 1:
                     if(yPos > (JUMPHEIGHT /3)*2):
-                        self.Left_Jump.clip_draw(0*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,x,y)
+                        self.Left_Jump.clip_draw(0*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,self.x,self.y)
                     elif (yPos > (JUMPHEIGHT /3)):
-                        self.Left_Jump.clip_draw(1*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,x,y)
+                        self.Left_Jump.clip_draw(1*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,self.x,self.y)
                     elif (yPos > (JUMPHEIGHT /3)*0):
-                        self.Left_Jump.clip_draw(2*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,x,y)
+                        self.Left_Jump.clip_draw(2*(self.Left_Jump.w//3), 0,self.Left_Jump.w//3,self.Left_Jump.h,self.x,self.y)
                 
             elif FALLING == True: # 점프 이후 떨어지는 애니메이션
                 if dir == 0: 
                     if(yPos > (JUMPHEIGHT /3)*2): # 하강 모션을 3분할 하여 더욱 자연스럽게 직관적으로.
-                        self.Right_Fall.clip_draw(0*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)
+                        self.Right_Fall.clip_draw(0*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,self.x,self.y)
                     elif (yPos > (JUMPHEIGHT /3)):
-                        self.Right_Fall.clip_draw(1*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)
+                        self.Right_Fall.clip_draw(1*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,self.x,self.y)
                     elif (yPos > (JUMPHEIGHT /3)*0):
-                        self.Right_Fall.clip_draw(2*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,x,y)    
+                        self.Right_Fall.clip_draw(2*(self.Right_Fall.w//3), 0,self.Right_Fall.w//3,self.Right_Fall.h,self.x,self.y)    
                 elif dir == 1:
                     if(yPos > (JUMPHEIGHT /3)*2):
-                        self.Left_Fall.clip_draw(2*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
+                        self.Left_Fall.clip_draw(2*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,self.x,self.y)
                     elif (yPos > (JUMPHEIGHT /3)):
-                        self.Left_Fall.clip_draw(1*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
+                        self.Left_Fall.clip_draw(1*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,self.x,self.y)
                     elif (yPos > (JUMPHEIGHT /3)*0):
-                        self.Left_Fall.clip_draw(0*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,x,y)
+                        self.Left_Fall.clip_draw(0*(self.Left_Fall.w//3), 0,self.Left_Fall.w//3,self.Left_Fall.h,self.x,self.y)
             delay(0.01)
  
         x += xPos * 4
@@ -85,36 +90,39 @@ class PLAYER:
 
         if JUMPKEYDOWN :
             if FALLING == False: # 점프로 올라가는 애니메이션
-                y += yPos
+                self.y += yPos ; self.y1 += yPos ;self.y2 += yPos 
+                
                 # 점프로 올라갈때 벽에 부딪히면 못올라가게.
                 if (self.level+1 < len(floors)):
-                    if(floors[self.level+1].y2 < y + self.Right_Jump.h//2 
-                    and floors[self.level+1].y1 > y + self.Right_Jump.h//2 
-                    and floors[self.level+1].x1 < x and floors[self.level+1].x2 > x):
-                        y -= yPos
+                    if(floors[self.level+1].y2 < self.y + self.Right_Jump.h//2 
+                    and floors[self.level+1].y1 > self.y + self.Right_Jump.h//2 
+                    and floors[self.level+1].x1 < self.x and floors[self.level+1].x2 > self.x):
+                        self.y -= yPos;self.y1 -= yPos ;self.y2 -= yPos 
             elif FALLING == True: # 점프 이후 떨어지는 애니메이션
                 if yPos <= JUMPHEIGHT : # 체공 시간 이후 떨어지게
-                    y -= yPos
+                    self.y -= yPos ; self.y1 -= yPos ;self.y2 -= yPos
                     # 떨어질때 floor를 밟음.
                     if (self.level+1 < len(floors)):
-                        if (floors[self.level+1].y2 < y - self.Right_Idle.h//2 
-                        and floors[self.level+1].y1 > y - self.Right_Idle.h//2 
-                        and floors[self.level+1].x1 < x and floors[self.level+1].x2 > x):
-                            y = floors[self.level+1].y1 + self.Right_Idle.h//2
+                        if (floors[self.level+1].y2 < self.y - self.Right_Idle.h//2 
+                        and floors[self.level+1].y1 > self.y - self.Right_Idle.h//2 
+                        and floors[self.level+1].x1 < self.x and floors[self.level+1].x2 > self.x):
+                            self.y = floors[self.level+1].y1 + self.Right_Idle.h//2
+                            self.y1 = self.y + (self.Right_Idle.h//2)
+                            self.y2 = self.y - (self.Right_Idle.h//2)
                             yPos = 1
                             # Floor 레벨 동일 적용 플레이어가 위치한 발판의 인덱스
                             self.level = self.level + 1
                             self.CompliteLevel = self.level
-                        elif (floors[self.level].y2 < y - self.Right_Idle.h//2 
-                        and floors[self.level].y1 > y - self.Right_Idle.h//2 
-                        and floors[self.level].x1 < x and floors[self.level].x2 > x):
-                            y += yPos
+                        elif (floors[self.level].y2 < self.y - self.Right_Idle.h//2 
+                        and floors[self.level].y1 > self.y - self.Right_Idle.h//2 
+                        and floors[self.level].x1 < self.x and floors[self.level].x2 > self.x):
+                            self.y += yPos ; self.y1 += yPos ;self.y2 += yPos
                             self.CompliteLevel = self.level
                         elif (self.level != 0):
-                            if (floors[self.level-1].y2 < y - self.Right_Idle.h//2 
-                            and floors[self.level-1].y1 > y - self.Right_Idle.h//2 
-                            and floors[self.level-1].x1 < x and floors[self.level-1].x2 > x):
-                                y += yPos
+                            if (floors[self.level-1].y2 < self.y - self.Right_Idle.h//2 
+                            and floors[self.level-1].y1 > self.y - self.Right_Idle.h//2 
+                            and floors[self.level-1].x1 < self.x and floors[self.level-1].x2 > self.x):
+                                self.y += yPos ; self.y1 += yPos ;self.y2 += yPos
                                 self.level = self.level - 1
                                 self.CompliteLevel = self.level
         
@@ -124,11 +132,11 @@ class PLAYER:
                     FALLING = False
                     JUMPKEYDOWN = False
                     # 현재 floor의 밖에 있다 (떨어져야함)
-                    if(floors[self.level].x1 > x + (self.Right_Run.w//10)//2 
-                    or floors[self.level].x2 < x - (self.Right_Run.w//10)//2):
+                    if(floors[self.level].x1 > self.x + (self.Right_Run.w//10)//2 
+                    or floors[self.level].x2 < self.x - (self.Right_Run.w//10)//2):
                         JUMPKEYDOWN , FALLING = True , True
                         yPos = JUMPHEIGHT
-                        y -= yPos
+                        self.y -= yPos ; self.y1 -= yPos ;self.y2 -= yPos
                         yPos -= 1
                         self.level -= 1
                     else:
@@ -137,8 +145,8 @@ class PLAYER:
                     FALLING = True
                     yPos = JUMPHEIGHT + 7 # + 7 은 공중에서 체공하는 시간정도를 나타냄.
         else : # JUMPKEYDOWN 이 False 일때
-            if(floors[self.level].x1 > x + (self.Right_Run.w//10)//2 
-            or floors[self.level].x2 < x - (self.Right_Run.w//10)//2):
+            if(floors[self.level].x1 > self.x + (self.Right_Run.w//10)//2 
+            or floors[self.level].x2 < self.x - (self.Right_Run.w//10)//2):
                 JUMPKEYDOWN , FALLING = True , True
                 yPos = JUMPHEIGHT
                 self.level -= 1
@@ -148,8 +156,7 @@ MoveRight ,MoveLeft = False , False
 
 FALLING = False
 frame = 0
-# 플레이어 좌표
-x,y = 300 , 300
+
 xPos , yPos = 0,0
 
 # dir 0 이면 오른쪽 1 이면 왼쪽을 마지막에 봄.
@@ -177,7 +184,7 @@ tool_name = 'floor' # map tool type
 
 def KeyDown_event(floors,player,walls): # map tool variable
     global play , xPos , yPos ,MoveLeft ,MoveRight ,dir,JUMPKEYDOWN, FALLING,Current_KeyDown_List
-    global x,y , floortype , tool_name
+    global floortype , tool_name
     events = get_events()
 
     for event in events:
@@ -195,7 +202,8 @@ def KeyDown_event(floors,player,walls): # map tool variable
                     floors.pop(len(floors)-1)
                     FloorObject.level -= 1
             elif tool_name == 'wall':
-                walls.pop(len(walls)-1)
+                if(len(walls)> 0):
+                    walls.pop(len(walls)-1)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_F1:
             tool_name = 'wall'
             print("wall tool")

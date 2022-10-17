@@ -84,6 +84,4 @@ def FloorChange(Player,floors,Water):
             FloorLevelAnimeCount -= 1
         else:
             FloorLevelAnimeCount += 1
-    # 현재 플레이어의 floor 레벨을 반환
-    return Player.CompliteLevel
         
