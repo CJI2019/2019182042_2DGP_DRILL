@@ -9,12 +9,14 @@ image = None
 
 def enter():
     # fill here
+    print('item enter')
     global image
     # image = load_image('pause.png')
     image = load_image('add_delete_boy.png')
 
 def exit():
     global image
+    print('item exit')
     del image
 
 def update():
